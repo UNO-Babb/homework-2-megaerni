@@ -60,6 +60,9 @@ def retrieveTimes():
     isItaTime(word)
   return validTimes
 
+#for spot in validTimes:
+
+
 #this function calculates the given time in minutes
 def getCurrentTime(time):
   currentTime = 0
