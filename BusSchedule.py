@@ -123,7 +123,7 @@ def recalculateTime(nextTime):
   newHour12 = newHour24 % 12
   if newHour12 == 0:
     newHour12 = 12
-  newTime = ("%d:%d%s" %(newHour12, newMin, suffix))
+  newTime = ("%d:%02d%s" % (newHour12, newMin, suffix))
   return newTime
 
 
@@ -144,7 +144,6 @@ def main():
   secondNextTime = getNextTime1(newListOfTimes, currentTimeInMin)
   recalFirstNextTime = recalculateTime(firstNextTime)
   recalSecondNextTime = recalculateTime(secondNextTime)
-  print(url)
   #print(currentTime)
   #print(listOfTimes)
   #print(currentTimeInMin)
@@ -152,5 +151,14 @@ def main():
   #print(recalFirstNextTime)
   print("It is %s currently. The next two busses will arrive at %s and %s." %(currentTime, recalFirstNextTime, recalSecondNextTime))
   
+  
+  firstBusWait = firstNextTime - currentTimeInMin
+  secondBusWait = secondNextTime - currentTimeInMin
+  if firstBusWait < 0:
+      firstBusWait += 24 * 60
+  if secondBusWait < 0:
+      secondBusWait += 24 * 60
+  print("The first bus arrives in %s minutes. The second bus arrives in %s minutes." %(firstBusWait, secondBusWait))
+
 
 main()
