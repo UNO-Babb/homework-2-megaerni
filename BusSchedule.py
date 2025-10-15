@@ -128,9 +128,9 @@ def recalculateTime(nextTime):
 
 
 def main():
-  busStopNum = "2269"
-  routeNum = "11"
-  direction = "EAST"
+  busStopNum = "6023"
+  routeNum = "00"
+  direction = "WEST"
   url = "https://myride.ometro.com/Schedule?stopCode=" +busStopNum +"&routeNumber=" +routeNum +"&directionName=" +direction
   loadedURL = loadURL(url) #loads the web page
   listOfTimes = retrieveTimes(loadedURL)
@@ -144,12 +144,12 @@ def main():
   secondNextTime = getNextTime1(newListOfTimes, currentTimeInMin)
   recalFirstNextTime = recalculateTime(firstNextTime)
   recalSecondNextTime = recalculateTime(secondNextTime)
-
-  print(currentTime)
-  print(listOfTimes)
-  print(currentTimeInMin)
-  print(firstNextTime)
-  print(recalFirstNextTime)
+  print(url)
+  #print(currentTime)
+  #print(listOfTimes)
+  #print(currentTimeInMin)
+  #print(firstNextTime)
+  #print(recalFirstNextTime)
   print("It is %s currently. The next two busses will arrive at %s and %s." %(currentTime, recalFirstNextTime, recalSecondNextTime))
   
 
