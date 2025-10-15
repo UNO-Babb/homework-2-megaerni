@@ -138,7 +138,9 @@ def main():
   currentTimeInMin = getCurrentTime(currentTime)
   firstNextTime = getNextTime1(listOfTimes, currentTimeInMin)
   newListOfTimes = list(listOfTimes)
-  newListOfTimes.remove(firstNextTime)
+  firstNextStr = recalculateTime(firstNextTime % 1440)
+  if firstNextStr in newListOfTimes:
+    newListOfTimes.remove(firstNextStr)
   secondNextTime = getNextTime1(newListOfTimes, currentTimeInMin)
   recalFirstNextTime = recalculateTime(firstNextTime)
   recalSecondNextTime = recalculateTime(secondNextTime)
