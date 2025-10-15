@@ -29,8 +29,7 @@ def loadURL(url):
 def loadTestPage():
   """
   This function returns the contents of our test page.
-  This is done to avoid unnecessary calls to the site
-  for our testing.
+  This is done to avoid unnecessary calls to the site for our testing.
   """
   page = open("testPage.txt", 'r')
   contents = page.read()
@@ -38,59 +37,118 @@ def loadTestPage():
 
   return contents
 
-validTimes = []
 
 #function that analyzes a word to determine whether that word is a time
 def isItaTime(word):
   word = word.strip()
   if len(word) < 5:
     return False
-  if ":" not in word:
+  elif ":" not in word:
     return False
-  if "PM" not in word and "AM" not in word:
+  elif "PM" not in word and "AM" not in word:
     return False
   else:
-    validTimes.append(word)
+    return True
 
 #function that filters through all words in the page to determine which are times
-def retrieveTimes():
-  c1 = loadTestPage() #loads the test page
-  wordContents = c1.split()
+def retrieveTimes(loadedURL):
+  validTimes = []
+  contentLoad = loadedURL #recalls the loaded contents from the web page
+  wordContents = contentLoad.split()
   for word in wordContents:
-    isItaTime(word)
+    if isItaTime(word) == True:
+      validTimes.append(word)
   return validTimes
-
-#for spot in validTimes:
-
 
 #this function calculates the given time in minutes
 def getCurrentTime(time):
-  currentTime = 0
+  minutesForNow = 0
+  time = time.strip().upper().rstrip(",.;:!?)[]}")
+  isPM = time.endswith("PM")
+  isAM = time.endswith("AM")
   time = time.replace("AM", "").replace("PM", "").strip()
   parts = time.split(":")
   hour = int(parts[0])
   minute = int(parts[1])
-  currentTime = currentTime + (hour * 60)
-  currentTime = currentTime + (minute)
-  print(currentTime)
+  if isAM:
+    if hour == 12:
+      hour = 0
+  elif isPM:
+    if hour != 12:
+      hour += 12
+  minutesForNow = minutesForNow + (hour * 60)
+  minutesForNow = minutesForNow + (minute)
+  return minutesForNow
 
-#def getHours(time):
+#this function gets the current time
+def whatTimeIsIt():
+  now = datetime.datetime.now()
+  currentHour24 = (now.hour - 5) % 24
+  currentMinute = now.minute
+  suffix = "AM" if currentHour24 < 12 else "PM"
+  currentHour12 = currentHour24 % 12
+  if currentHour12 == 0:
+    currentHour12 = 12
+  currentHourMin = "%d:%02d%s" % (currentHour12, currentMinute, suffix)
+  return(currentHourMin)
+
+#this function searches the list of times (displayed in minutes) to determine which is next
+def getNextTime1(listOfTimes, currentTimeInMin):
+  convertedTimes = []
+  for spot in listOfTimes:
+    timeInMin = getCurrentTime(spot)
+    convertedTimes.append(timeInMin)
+  nextTime1 = None
+  for spot in convertedTimes:
+    if spot >= currentTimeInMin:
+      if nextTime1 is None or spot < nextTime1:
+        nextTime1 = spot
+  if nextTime1 is None:
+    nextTime1 = min(convertedTimes) + 24*60
+  return nextTime1
+
+#this function searches for the second next time
+def getNextTime2(listOfTimes, firstNextTime):
+  newListOfTimes = copy.listOfTimes()
+  newListOfTimes = newListOfTimes.drop[firstNextTime]
+  currentTimeInMin = whatTimeIsIt()
+  nextTime2 = getNextTime1(newListOfTimes, currentTimeInMin)
+  return nextTime2
+
+#this function converts the calculated next times into a user-friendly display time
+def recalculateTime(nextTime):
+  newHour24 = (nextTime)//60
+  newMin = (nextTime) % 60
+  suffix = "AM" if newHour24 < 12 else "PM"
+  newHour12 = newHour24 % 12
+  if newHour12 == 0:
+    newHour12 = 12
+  newTime = ("%d:%d%s" %(newHour12, newMin, suffix))
+  return newTime
+
 
 def main():
   busStopNum = "2269"
   routeNum = "11"
   direction = "EAST"
   url = "https://myride.ometro.com/Schedule?stopCode=" +busStopNum +"&routeNumber=" +routeNum +"&directionName=" +direction
-  c1 = loadURL(url) #loads the web page
-  print(c1)
-  r1 = retrieveTimes()
-  now = datetime.datetime.now()
-  currentHour = (now.hour - 5) % 12
-  currentMinute = now.minute
-  print (currentHour, currentMinute)
-  print(validTimes)
-  #r2 = getCurrentTime(validTimes)
-  #print(r2)
+  loadedURL = loadURL(url) #loads the web page
+  listOfTimes = retrieveTimes(loadedURL)
+  currentTime = whatTimeIsIt()
+  currentTimeInMin = getCurrentTime(currentTime)
+  firstNextTime = getNextTime1(listOfTimes, currentTimeInMin)
+  newListOfTimes = list(listOfTimes)
+  newListOfTimes.remove(firstNextTime)
+  secondNextTime = getNextTime1(newListOfTimes, currentTimeInMin)
+  recalFirstNextTime = recalculateTime(firstNextTime)
+  recalSecondNextTime = recalculateTime(secondNextTime)
+
+  print(currentTime)
+  print(listOfTimes)
+  print(currentTimeInMin)
+  print(firstNextTime)
+  print(recalFirstNextTime)
+  print("It is %s currently. The next two busses will arrive at %s and %s." %(currentTime, recalFirstNextTime, recalSecondNextTime))
   
 
 main()
